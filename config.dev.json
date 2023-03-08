@@ -1,0 +1,15 @@
+{
+  "app_id": "",
+  "secret_key": "",
+  "token": "",
+  "aes_key": "",
+  "api_key": "",
+  "session_timeout": 180,
+  "max_tokens": 1024,
+  "model": "gpt-3.5-turbo-0301",
+  "session_clear_token": "清空会话",
+  "role": "assistant",
+  "image_start_key": "画图画",
+  "image_n": 2,
+  "image_size": "512x512"
+}
