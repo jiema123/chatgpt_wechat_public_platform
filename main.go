@@ -67,7 +67,7 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
-			handler, _ := handlers.NewUserMessageHandler(msg.Content, msg.ToUserName)
+			handler, _ := handlers.NewUserMessageHandler(msg.Content, msg.FromUserName)
 			return messages.NewText(handler.ReplyText())
 		}
 		return messages.NewText("not supper")

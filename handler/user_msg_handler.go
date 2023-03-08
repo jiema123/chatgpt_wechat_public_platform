@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"log"
+	"myapp/config"
 	"myapp/gpt"
 	"myapp/service"
 	"strings"
@@ -51,8 +52,10 @@ func (h *UserMessageHandler) ReplyText() string {
 		}
 	}
 
-	// 2.设置上下文，回复用户
-	h.service.SetUserSessionContext(requestText, reply)
+	if !strings.Contains(h.msg, config.LoadConfig().ImageStartKey) {
+		// 2.设置上下文，回复用户
+		h.service.SetUserSessionContext(requestText, reply)
+	}
 
 	return buildUserReply(reply)
 }
