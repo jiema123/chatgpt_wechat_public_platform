@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/patrickmn/go-cache"
 	"log"
 	"myapp/config"
 	"myapp/gpt"
@@ -27,6 +28,7 @@ func NewUserMessageHandler(message string, userId string) (*UserMessageHandler, 
 		service: userService,
 	}
 
+	cache.Cache{}.Set(userId, handler.ReplyText(), config.LoadConfig().SessionTimeout)
 	return handler, nil
 }
 

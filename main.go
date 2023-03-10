@@ -2,11 +2,13 @@ package main
 
 import (
 	"github.com/ArtisanCloud/PowerLibs/v3/fmt"
+	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/contract"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/messages"
 	models2 "github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/models"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount/server/handlers/models"
+	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"myapp/config"
 	handlers "myapp/handler"
@@ -67,11 +69,17 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
-			handler, _ := handlers.NewUserMessageHandler(msg.Content, msg.FromUserName)
-			return messages.NewText(handler.ReplyText())
+			result, ok := cache.Cache{}.Get(msg.FromUserName)
+			if ok {
+				cache.Cache{}.Delete(msg.FromUserName)
+				return messages.NewText(result.(string))
+			}
+			go handleMsg(msg.FromUserName, msg.Content)
+
+			return messages.NewText("AI 正在思考输入任意键继续")
 		}
-		return messages.NewText("not supper")
-		//return kernel.SUCCESS_EMPTY_RESPONSE
+		//return messages.NewText("not supper")
+		return kernel.SUCCESS_EMPTY_RESPONSE
 
 	})
 	if err != nil {
@@ -84,6 +92,10 @@ func wechatNotify(context *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func handleMsg(userId string, msg string) {
+	handlers.NewUserMessageHandler(msg, userId)
 }
 
 func wechatCallback(context *gin.Context) {
