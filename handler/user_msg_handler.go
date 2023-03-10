@@ -20,14 +20,14 @@ type UserMessageHandler struct {
 }
 
 // NewUserMessageHandler 创建私聊处理器
-func NewUserMessageHandler(message string, userId string, cache cache.Cache) (*UserMessageHandler, error) {
+func NewUserMessageHandler(message string, userId string, cache *cache.Cache) (*UserMessageHandler, error) {
 	userService := service.NewUserService(c, userId)
 	handler := &UserMessageHandler{
 		msg:     message,
 		userId:  userId,
 		service: userService,
 	}
-	cache.Set(userId, handler.ReplyText(), config.LoadConfig().SessionTimeout)
+	cache.Set(userId, handler.ReplyText(), -1)
 	return handler, nil
 }
 
