@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/patrickmn/go-cache"
 	"log"
 	"myapp/config"
 	"myapp/gpt"
@@ -19,14 +20,14 @@ type UserMessageHandler struct {
 }
 
 // NewUserMessageHandler 创建私聊处理器
-func NewUserMessageHandler(message string, userId string) (*UserMessageHandler, error) {
+func NewUserMessageHandler(message string, userId string, c cache.Cache) (*UserMessageHandler, error) {
 	userService := service.NewUserService(c, userId)
 	handler := &UserMessageHandler{
 		msg:     message,
 		userId:  userId,
 		service: userService,
 	}
-
+	c.Set(userId, handler.ReplyText(), config.LoadConfig().SessionTimeout)
 	return handler, nil
 }
 

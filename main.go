@@ -8,16 +8,19 @@ import (
 	models2 "github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/models"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount/server/handlers/models"
+	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"myapp/config"
 	handlers "myapp/handler"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 var db = make(map[string]string)
+var c = cache.New(5*time.Minute, 10*time.Minute)
 
 func setupRouter() *gin.Engine {
 	// Disable Console Color
@@ -68,11 +71,11 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
-			//result, ok := cache.Get(msg.FromUserName)
-			//if ok {
-			//	cache.Delete(msg.FromUserName)
-			//	return messages.NewText(result.(string))
-			//}
+			result, ok := c.Get(msg.FromUserName)
+			if ok {
+				c.Delete(msg.FromUserName)
+				return messages.NewText(result.(string))
+			}
 			go handleMsg(msg.FromUserName, msg.Content)
 
 			return messages.NewText("AI 正在思考输入任意键继续")
@@ -94,7 +97,7 @@ func wechatNotify(context *gin.Context) {
 }
 
 func handleMsg(userId string, msg string) {
-	handlers.NewUserMessageHandler(msg, userId)
+	handlers.NewUserMessageHandler(msg, userId, c)
 }
 
 func wechatCallback(context *gin.Context) {
