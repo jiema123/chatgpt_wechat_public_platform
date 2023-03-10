@@ -8,7 +8,6 @@ import (
 	models2 "github.com/ArtisanCloud/PowerWeChat/v3/src/kernel/models"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount"
 	"github.com/ArtisanCloud/PowerWeChat/v3/src/officialAccount/server/handlers/models"
-	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"myapp/config"
 	handlers "myapp/handler"
@@ -40,7 +39,6 @@ func setupRouter() *gin.Engine {
 }
 
 func wechatNotify(context *gin.Context) {
-	var cache *cache.Cache
 	conf := config.LoadConfig()
 	OfficialAccountApp, err := officialAccount.NewOfficialAccount(&officialAccount.UserConfig{
 		AppID:  conf.AppId,
@@ -70,11 +68,11 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
-			result, ok := cache.Get(msg.FromUserName)
-			if ok {
-				cache.Delete(msg.FromUserName)
-				return messages.NewText(result.(string))
-			}
+			//result, ok := cache.Get(msg.FromUserName)
+			//if ok {
+			//	cache.Delete(msg.FromUserName)
+			//	return messages.NewText(result.(string))
+			//}
 			go handleMsg(msg.FromUserName, msg.Content)
 
 			return messages.NewText("AI 正在思考输入任意键继续")
