@@ -40,6 +40,7 @@ func setupRouter() *gin.Engine {
 }
 
 func wechatNotify(context *gin.Context) {
+	var cache *cache.Cache
 	conf := config.LoadConfig()
 	OfficialAccountApp, err := officialAccount.NewOfficialAccount(&officialAccount.UserConfig{
 		AppID:  conf.AppId,
@@ -69,9 +70,9 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
-			result, ok := cache.Cache{}.Get(msg.FromUserName)
+			result, ok := cache.Get(msg.FromUserName)
 			if ok {
-				cache.Cache{}.Delete(msg.FromUserName)
+				cache.Delete(msg.FromUserName)
 				return messages.NewText(result.(string))
 			}
 			go handleMsg(msg.FromUserName, msg.Content)
