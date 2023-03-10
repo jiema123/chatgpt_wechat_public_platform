@@ -78,7 +78,7 @@ func wechatNotify(context *gin.Context) {
 			}
 			go handleMsg(msg.FromUserName, msg.Content)
 
-			return messages.NewText("AI 正在思考输入任意键继续")
+			return messages.NewText("请稍等片刻，AI正在为您查询答案。输入任意字符或按回车键继续查看。")
 		}
 		//return messages.NewText("not supper")
 		return kernel.SUCCESS_EMPTY_RESPONSE
