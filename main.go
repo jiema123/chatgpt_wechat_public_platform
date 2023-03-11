@@ -11,6 +11,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"myapp/config"
+	"myapp/consts"
 	handlers "myapp/handler"
 	"net/http"
 	"os"
@@ -71,6 +72,12 @@ func wechatNotify(context *gin.Context) {
 				return "error"
 			}
 			fmt.Dump(msg)
+
+			_, ok := c.Get(consts.WECHAT_SESSION_KEY_LOCK + msg.FromUserName)
+			if ok {
+				return messages.NewText(consts.WECHAT_WAITE)
+			}
+
 			result, ok := c.Get(msg.FromUserName)
 			if ok {
 				c.Delete(msg.FromUserName)
@@ -78,11 +85,7 @@ func wechatNotify(context *gin.Context) {
 			}
 			go handleMsg(msg.FromUserName, msg.Content)
 
-			return messages.NewText("请稍等片刻，AI正在为您查询答案。输入任意字符继续查看。" +
-				"\n使用技巧" +
-				"\n普通提问：你想问的任何问题 " +
-				"\n绘图功能：以画图画三个字打头 加上图的描述信息" +
-				"\n举个例子：1. 你是机器人吗  2. 画图画 在写代码的小猫")
+			return messages.NewText(consts.WECHAT_HELLO)
 		}
 		//return messages.NewText("not supper")
 		return kernel.SUCCESS_EMPTY_RESPONSE

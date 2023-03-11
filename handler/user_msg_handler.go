@@ -4,6 +4,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"log"
 	"myapp/config"
+	"myapp/consts"
 	"myapp/gpt"
 	"myapp/service"
 	"strings"
@@ -21,6 +22,7 @@ type UserMessageHandler struct {
 
 // NewUserMessageHandler 创建私聊处理器
 func NewUserMessageHandler(message string, userId string, cache *cache.Cache) (*UserMessageHandler, error) {
+	cache.Set(consts.WECHAT_SESSION_KEY_LOCK+userId, "locked", 10000)
 	userService := service.NewUserService(c, userId)
 	handler := &UserMessageHandler{
 		msg:     message,
@@ -28,6 +30,7 @@ func NewUserMessageHandler(message string, userId string, cache *cache.Cache) (*
 		service: userService,
 	}
 	cache.Set(userId, handler.ReplyText(), -1)
+	cache.Delete(consts.WECHAT_SESSION_KEY_LOCK + userId)
 	return handler, nil
 }
 
