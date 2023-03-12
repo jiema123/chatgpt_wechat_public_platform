@@ -8,6 +8,7 @@ import (
 	"myapp/gpt"
 	"myapp/service"
 	"strings"
+	"time"
 )
 
 // UserMessageHandler 私聊消息处理
@@ -22,7 +23,7 @@ type UserMessageHandler struct {
 
 // NewUserMessageHandler 创建私聊处理器
 func NewUserMessageHandler(message string, userId string, cache *cache.Cache) (*UserMessageHandler, error) {
-	cache.Set(consts.WECHAT_SESSION_KEY_LOCK+userId, "locked", 10000)
+	cache.Set(consts.WECHAT_SESSION_KEY_LOCK+userId, "locked", 60*time.Second)
 	userService := service.NewUserService(c, userId)
 	handler := &UserMessageHandler{
 		msg:     message,

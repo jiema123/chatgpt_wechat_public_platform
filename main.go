@@ -73,6 +73,7 @@ func wechatNotify(context *gin.Context) {
 			}
 			fmt.Dump(msg)
 
+			// 查询锁，存在返回处理中的提示，避免重复操作
 			_, ok := c.Get(consts.WECHAT_SESSION_KEY_LOCK + msg.FromUserName)
 			if ok {
 				return messages.NewText(consts.WECHAT_WAITE)
@@ -84,6 +85,14 @@ func wechatNotify(context *gin.Context) {
 				return messages.NewText(result.(string))
 			}
 			go handleMsg(msg.FromUserName, msg.Content)
+
+			// 如果5秒内处理完那么直接返回
+			time.Sleep(4 * time.Second)
+			result2, ok2 := c.Get(msg.FromUserName)
+			if ok2 {
+				c.Delete(msg.FromUserName)
+				return messages.NewText(result2.(string))
+			}
 
 			return messages.NewText(consts.WECHAT_HELLO)
 		}
