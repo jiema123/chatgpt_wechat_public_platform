@@ -42,6 +42,12 @@ func (h *UserMessageHandler) ReplyText() string {
 		reply string
 		err   error
 	)
+
+	if h.msg == config.LoadConfig().SessionClearToken {
+		h.service.ClearUserSessionContext()
+		return consts.WECHAT_NEXT
+	}
+
 	// 1.获取上下文，如果字符串为空不处理
 	requestText := h.getRequestText()
 	if requestText == "" {

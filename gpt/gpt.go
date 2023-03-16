@@ -131,7 +131,7 @@ func textProcess(msg string) (string, error) {
 
 	for retry := 1; retry <= 3; retry++ {
 		if retry > 1 {
-			time.Sleep(time.Duration(retry-1) * 100 * time.Millisecond)
+			time.Sleep(time.Duration(retry-1) * 300 * time.Millisecond)
 		}
 		msgItem := MessageItem{
 			Role:    cfg.Role,
